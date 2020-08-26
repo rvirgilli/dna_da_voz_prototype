@@ -34,6 +34,7 @@ def remove_silence(samples, frame_rate, sample_width=4, silence_thresh='optimum'
     elif type(silence_thresh) is not int:
         raise('silence threshold is not an integer.')
 
+
     chunks = split_on_silence(audio_segment, min_silence_len=500, silence_thresh=silence_thresh, keep_silence=250)
 
     wav2 = AudioSegment.empty()
@@ -42,7 +43,6 @@ def remove_silence(samples, frame_rate, sample_width=4, silence_thresh='optimum'
         wav2 += chunks[i]
 
     no_silence_samples = wav2.get_array_of_samples()
-
     return no_silence_samples
 
 def normalize_samples(samples, sample_width):
@@ -61,8 +61,9 @@ def normalize_samples(samples, sample_width):
         abs_samples[start:end] = np.array([max_val] * bunch_size)
 
     start = n_bunchs * bunch_size
-    max_val = max(abs_samples[start:])
-    abs_samples[start:] = np.array([max_val] * len(abs_samples[start:]))
+    if start < len(abs_samples):
+        max_val = max(abs_samples[start:])
+        abs_samples[start:] = np.array([max_val] * len(abs_samples[start:]))
 
     b, a = signal.butter(8, 0.01)
     y = signal.filtfilt(b, a, abs_samples)

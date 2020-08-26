@@ -29,18 +29,20 @@ class VoiceVerificator:
         if model_file:
             self.model_file = model_file
         else:
-            self.model_file = './files/models/model2.h5'
-
-        if sep_threshold:
-            self.sep_threshold = sep_threshold
-        else:
-            self.sep_threshold = 39.0
+            self.model_file = './files/models/model.h5'
 
         self.model = load_model(self.model_file, custom_objects=
                        {'loss': batch_all_cosine_triplet_loss, 'batch_all_cosine_accuracy': batch_all_cosine_accuracy})
 
         self.min_ref_length = min_ref_length
         self.min_ver_length = min_ver_length
+
+
+        if sep_threshold:
+            self.sep_threshold = sep_threshold
+        else:
+            self.sep_threshold = 45.13513513513513
+
         self.embs_ref_pickle =  './files/temp/embs_ref.pickle'
 
         print('object initialized')

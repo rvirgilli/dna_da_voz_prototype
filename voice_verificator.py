@@ -83,16 +83,14 @@ class VoiceVerificator:
         except:
             raise Exception('Error loading audio file. It must be PCM-WAV sampled at 44100 Hz and lasting for %d secs, at least.' % length)
 
-    def generate_spectrograms(self, audio_path, dst_folder):
+    def generate_spectrograms(self, samples, sr, dst_folder):
         if os.path.exists(dst_folder):
             shutil.rmtree(dst_folder)
         os.mkdir(dst_folder)
 
-        audio_folder = os.path.split(audio_path)[0]
-        audio_file = os.path.split(audio_path)[1]
         spects_folder = dst_folder
 
-        generate_gold(audio_file, audio_folder, self.spect_params, spects_folder)
+        generate_gold(samples, sr, self.spect_params, spects_folder)
 
     def references(self, file_path):
 

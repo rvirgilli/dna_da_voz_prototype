@@ -27,11 +27,11 @@ def get_mel_power(y, sr, top_db=50, window_width=4096, hop_length=285, n_mels=50
     return y
 
 
-def generate_spects(audio_file, audio_folder, spect_params, spects_folder):
+def generate_spects(samples, sr, spect_params, spects_folder):
 
     count = 0
 
-    sr = spect_params['sr']
+    #sr = spect_params['sr']
     duration = int(spect_params['duration'])
     n_samples = int(duration * sr / 1000)
     scale = spect_params['scale'][0]
@@ -51,9 +51,8 @@ def generate_spects(audio_file, audio_folder, spect_params, spects_folder):
 
     #loading audio
     index = 0
-    input = os.path.join(audio_folder, audio_file)
 
-    raw_chunks, sr = audio_cut_raw_data(input_file=input, n_samples=n_samples, sr=sr)
+    raw_chunks = audio_cut_raw_data(samples=samples, n_samples=n_samples)
 
     for chunk in raw_chunks:
         if scale == 'mel':

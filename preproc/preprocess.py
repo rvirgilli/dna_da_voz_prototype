@@ -2,9 +2,14 @@ from preproc.remove_silence import remove_silence, normalize_samples
 from pydub import AudioSegment
 import librosa
 
-def preprocess_wavs(src_file, silence_threshold='optimum'):
+def preprocess_wavs(src_file, minimum_duration=3.8, silence_threshold='optimum'):
     audio = AudioSegment.from_file(src_file)
-    audio.set_channels(1)
+
+    if audio.duration_seconds < minimum_duration:
+        return [], audio.frame_rate
+
+    #audio = audio.set_frame_rate(44100)
+    audio = audio.set_channels(1)
 
     samples = audio.get_array_of_samples()
     max_amp = 2 ** (audio.sample_width * 8 - 1)

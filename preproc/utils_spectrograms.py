@@ -27,7 +27,12 @@ def get_mel_power(y, sr, top_db=50, window_width=4096, hop_length=285, n_mels=50
     return y
 
 
-def generate_spects(samples, sr, spect_params, spects_folder):
+def generate_spects(samples, sr, spect_params):
+    if len(samples) == 0:
+        #todo add padding to short audios in order to generate spect
+        return []
+
+
 
     count = 0
 
@@ -54,14 +59,14 @@ def generate_spects(samples, sr, spect_params, spects_folder):
 
     raw_chunks = audio_cut_raw_data(samples=samples, n_samples=n_samples)
 
+    spects = []
+
     for chunk in raw_chunks:
         if scale == 'mel':
             spect = get_mel_power(chunk, sr=sr, top_db=top_db, window_width=window_width, hop_length=hop_length,
                                n_mels=n_mels, slice_at=slice_at, power=power)
         else:
             raise Exception('Spectrogram scale not properly defined.')
-
-        file_path = os.path.join(spects_folder, str(index).zfill(5) + '.png')
 
         image = Image.fromarray(spect)
 
@@ -79,9 +84,10 @@ def generate_spects(samples, sr, spect_params, spects_folder):
 
             image.thumbnail((new_height, new_width), Image.ANTIALIAS)
 
-        image.save(file_path, 'PNG')
+        spects.append(image)
 
         index += 1
         count += 1
 
-    return count
+    print(spects[0].shape)
+    return spects

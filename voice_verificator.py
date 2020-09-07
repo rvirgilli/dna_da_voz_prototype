@@ -47,18 +47,19 @@ class VoiceVerificator:
 
         print('object initialized')
 
-    def predict_embeddings(self, spects_folder):
+    def predict_embeddings(self, spects):
+        if len(spects) == 0:
+            return np.array([])
 
-        files = os.listdir(spects_folder)
-        embeddings = []
-        for file in files:
-            file_path = os.path.join(spects_folder, file)
-            img = np.array(Image.open(file_path), dtype='float32')
+        imgs = []
+        for spect in spects:
+            img = np.array(spect, dtype='float32')
             img = self.normalization2(img)
-            img = np.reshape(img, (1, *img.shape, 1))
+            img = np.reshape(img, (*img.shape, 1))
+            imgs.append(img)
 
-            embedding = self.model.predict(img, verbose=0)
-            embeddings.append(embedding)
+        imgs = np.array(imgs)
+        embeddings = self.model.predict(imgs, verbose=0)
 
         return np.array(embeddings)
 
@@ -83,14 +84,8 @@ class VoiceVerificator:
         except:
             raise Exception('Error loading audio file. It must be PCM-WAV sampled at 44100 Hz and lasting for %d secs, at least.' % length)
 
-    def generate_spectrograms(self, samples, sr, dst_folder):
-        if os.path.exists(dst_folder):
-            shutil.rmtree(dst_folder)
-        os.mkdir(dst_folder)
-
-        spects_folder = dst_folder
-
-        generate_gold(samples, sr, self.spect_params, spects_folder)
+    def generate_spectrograms(self, samples, sr):
+        return generate_gold(samples, sr, self.spect_params)
 
     def references(self, file_path):
 
@@ -119,16 +114,9 @@ class VoiceVerificator:
         if not self.check_file(file_path, self.min_ver_length):
             return False
 
-        temp_verification_audio = './files/temp/temp_verification.wav'
-        preprocess_wavs(file_path, temp_verification_audio, silence_threshold=-27)
-
-        temp_spects_folder = './files/temp/temp_verification_spects'
-        self.generate_spectrograms(temp_verification_audio, temp_spects_folder)
-
-        emb_verification = self.predict_embeddings(temp_spects_folder)
-
-        shutil.rmtree(temp_spects_folder)
-        os.remove(temp_verification_audio)
+        samples, sr = preprocess_wavs(file_path, silence_threshold=-27)
+        spects = self.generate_spectrograms(samples, sr)
+        emb_verification = self.predict_embeddings(spects)
 
         emb_refs = pickle.load(open(self.embs_ref_pickle, "rb"))
 

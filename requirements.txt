@@ -1,7 +1,5 @@
-librosa
 numpy
-Pillow
 pydub
 scipy
-tensorflow
-tqdm
+torch
+torchaudio

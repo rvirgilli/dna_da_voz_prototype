@@ -5,14 +5,13 @@ Arquivo 'requirements.txt'
 
 #### Requisitos:
 
-Os áudios, tanto de referência quanto de verificação, devem estar no formato WAV
-com taxa de amostragem de 44100 Hz e bit-depth de 16 bits ou superior.
+Os áudios, tanto de referência quanto de verificação, devem estar no formato WAV,
+de preferência com taxa de amostragem de 16000 Hz e bit-depth de 16 bits ou superior.
 
-A duração mínima para o áudio de referência deve ser de 45 segundos e a duração
-mínima para o áudio de verificação deve ser de 12 segundos.
+Recomendamos que a duração mínima para os áudios, tanto de referência quanto de verificação, seja de 45 segundos.
 
 #### Uso
 
-Um exemplo de uso pode ser encontrado no arquivo 'main.py'
+Um exemplo de uso pode ser encontrado no arquivo 'test.ipynb'.
 
 

@@ -65,8 +65,7 @@ class DNAdaVoz(nn.Module):
 
         return feat
 
-    @staticmethod
-    def calculate_score(ref_feat, com_feat):
+    def calculate_score(self, ref_feat, com_feat):
 
         ref_feat = ref_feat.cuda()
         com_feat = com_feat.cuda()
@@ -74,8 +73,7 @@ class DNAdaVoz(nn.Module):
         ref_feat = F.normalize(ref_feat, p=2, dim=1)
         com_feat = F.normalize(com_feat, p=2, dim=1)
 
-        dist = F.pairwise_distance(ref_feat.unsqueeze(-1),
-                                   com_feat.unsqueeze(-1).transpose(0, 2)).detach().cpu().numpy();
+        dist = torch.cdist(ref_feat.reshape(self.num_eval, -1), com_feat.reshape(self.num_eval, -1)).detach().cpu().numpy()
 
         score = -1 * np.mean(dist);
 

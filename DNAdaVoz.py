@@ -65,8 +65,8 @@ class DNAdaVoz(nn.Module):
 
         return feat
 
-
-    def calculate_score(self, ref_feat, com_feat):
+    @staticmethod
+    def calculate_score(ref_feat, com_feat):
 
         ref_feat = ref_feat.cuda()
         com_feat = com_feat.cuda()
@@ -74,14 +74,12 @@ class DNAdaVoz(nn.Module):
         ref_feat = F.normalize(ref_feat, p=2, dim=1)
         com_feat = F.normalize(com_feat, p=2, dim=1)
 
-        dist = torch.cdist(ref_feat.reshape(self.num_eval, -1), com_feat.reshape(self.num_eval, -1)).detach().cpu().numpy()
+        dist = F.pairwise_distance(ref_feat.unsqueeze(-1),
+                                   com_feat.unsqueeze(-1).transpose(0, 2)).detach().cpu().numpy();
 
-        score = -1 * numpy.mean(dist)
+        score = -1 * np.mean(dist);
 
         return score
-
-    def verify_speaker(self, ref_feat, com_feat):
-        return calculate_score(ref_feat, com_feat) > self.threshold
 
     def find_class(self, audio):
         com_feat = self.predict_embeddings(audio)
